@@ -1,0 +1,186 @@
+Imports System.IO.Ports
+
+
+Public Class Form1
+
+    Dim serielePoort As New SerialPort
+
+    Private Sub btnSerielePoorten_Click(sender As Object, e As EventArgs)
+        Dim poortNamen As New List(Of String)
+
+        poortNamen = SerialPort.GetPortNames().ToList()
+
+        cboSerielePoort.Items.Clear()
+
+        Dim teller As Integer
+        For teller = 0 To poortNamen.Count - 1 Step 1
+            cboSerielePoort.Items.Add(poortNamen(teller))
+        Next
+
+    End Sub
+
+    Private Sub btnRed_Click(sender As Object, e As EventArgs) Handles btnRed.Click
+
+        serielePoort.WriteLine(Controle("Red"))
+
+    End Sub
+
+    Private Sub btnBlu_Click(sender As Object, e As EventArgs) Handles btnBlu.Click
+
+        serielePoort.WriteLine(Controle("Blu"))
+
+    End Sub
+
+    Private Sub btnGrn_Click(sender As Object, e As EventArgs) Handles btnGrn.Click
+
+        serielePoort.WriteLine(Controle("Grn"))
+
+    End Sub
+
+    Private Sub btnOrg_Click(sender As Object, e As EventArgs) Handles btnOrg.Click
+
+        serielePoort.WriteLine(Controle("Org"))
+
+    End Sub
+
+    Private Sub btnPur_Click(sender As Object, e As EventArgs) Handles btnPur.Click
+
+        serielePoort.WriteLine(Controle("Pur"))
+
+    End Sub
+
+    Private Sub btnYlw_Click(sender As Object, e As EventArgs) Handles btnYlw.Click
+
+        serielePoort.WriteLine(Controle("Ylw"))
+
+    End Sub
+
+    Private Sub btnTea_Click(sender As Object, e As EventArgs) Handles btnTea.Click
+
+        serielePoort.WriteLine(Controle("Tea"))
+
+    End Sub
+
+    Private Sub btnWht_Click(sender As Object, e As EventArgs) Handles btnWht.Click
+
+        serielePoort.WriteLine(Controle("Wht"))
+
+    End Sub
+
+    Private Sub btnRbw_Click(sender As Object, e As EventArgs) Handles btnRbw.Click
+
+        serielePoort.WriteLine(Controle("Rbw"))
+
+    End Sub
+
+    Private Sub btnOff_Click(sender As Object, e As EventArgs) Handles btnOff.Click
+
+        serielePoort.WriteLine(Controle("Off"))
+
+    End Sub
+
+    Private Sub btnConnect_Click(sender As Object, e As EventArgs) Handles btnConnect.Click
+        Try
+            serielePoort.PortName = txtSerielePoort.Text
+            serielePoort.BaudRate = 9600
+            serielePoort.DataBits = 8
+            serielePoort.Parity = Parity.None
+            serielePoort.StopBits = StopBits.One
+            serielePoort.Handshake = Handshake.None
+            serielePoort.DtrEnable = True
+            serielePoort.RtsEnable = True
+
+            If (serielePoort.IsOpen = False) Then
+                serielePoort.Open()
+            End If
+
+            If (serielePoort.IsOpen = True) Then
+                MessageBox.Show("Connection was succesful.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                MessageBox.Show("Connection failed.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
+        Try
+            If (serielePoort.IsOpen = True) Then
+                serielePoort.Close()
+            End If
+
+            If (serielePoort.IsOpen = False) Then
+                MessageBox.Show("Connection was succesful.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                MessageBox.Show("Connection failed.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub btnSerielePoorten_Click_1(sender As Object, e As EventArgs) Handles btnSerielePoorten.Click
+        Dim poortNamen As New List(Of String)
+
+        poortNamen = SerialPort.GetPortNames().ToList()
+
+        cboSerielePoort.Items.Clear()
+
+        Dim teller As Integer
+        For teller = 0 To poortNamen.Count - 1 Step 1
+            cboSerielePoort.Items.Add(poortNamen(teller))
+        Next
+
+    End Sub
+
+    Public Function Controle(ColourReceive As String) As String
+        Dim ColourSend As String
+        ColourSend = "Off"
+
+        Try
+            If (serielePoort.IsOpen) Then
+                ColourSend = ColourReceive
+            Else
+                MessageBox.Show("Make sure you're connected to the Arduino first.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
+        Return ColourSend
+    End Function
+
+    Private Sub chkControl_CheckedChanged(sender As Object, e As EventArgs) Handles chkControl.CheckedChanged
+
+        While chkControl.Checked = True
+            Dim Str As System.IO.Stream
+            Dim srRead As System.IO.StreamReader
+            Try
+                Dim req As System.Net.WebRequest = System.Net.WebRequest.Create("http://fl4il.eu:5000/get")
+                Dim resp As System.Net.WebResponse = req.GetResponse
+                Dim kleur As String
+                Str = resp.GetResponseStream
+                srRead = New System.IO.StreamReader(Str)
+                kleur = srRead.ReadToEnd
+                If (kleur = "red") Then
+                    serielePoort.WriteLine(Controle("Red"))
+                End If
+                If (kleur = "blue") Then
+                    serielePoort.WriteLine(Controle("Blu"))
+                End If
+                If (kleur = "green") Then
+                    serielePoort.WriteLine(Controle("Grn"))
+                End If
+            Catch ex As Exception
+                MessageBox.Show("Unable to download content")
+                MessageBox.Show(ex.Message)
+            Finally
+                srRead.Close()
+                Str.Close()
+            End Try
+        End While
+    End Sub
+End Class
+
