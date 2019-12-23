@@ -1,0 +1,137 @@
+const char red = A1;
+const char blue = A0;
+const char green = A2;
+const int off = 255;
+const int on = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(blue, OUTPUT);
+  pinMode(red, OUTPUT);
+  pinMode(green, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if(Serial.available() > 0)
+  {
+    String kleur = Serial.readStringUntil('\n');  
+
+    if (kleur == "Red")
+    {
+      Serial.println("Red");
+      analogWrite(red, on);
+      analogWrite(blue, off);
+      analogWrite(green, off);  
+    }
+
+    else if (kleur == "Blu")
+    {
+      Serial.println("Blu");
+      analogWrite(red, off);
+      analogWrite(blue, on);
+      analogWrite(green, off);  
+    }
+
+    else if (kleur == "Grn")
+    {
+      Serial.println("Grn");
+      analogWrite(red, off);
+      analogWrite(blue, off);
+      analogWrite(green, on);  
+    }
+
+    else if (kleur == "Org")
+    {
+      Serial.println("Org");
+      analogWrite(red, 1);
+      analogWrite(blue, off);
+      analogWrite(green, 90);  
+    }
+
+    else if (kleur == "Pur")
+    {
+      Serial.println("Pur");
+      analogWrite(red, 26);
+      analogWrite(blue, 26);
+      analogWrite(green, 135);  
+    }
+
+    else if (kleur == "Ylw")
+    {
+      Serial.println("Ylw");
+      analogWrite(red, on);
+      analogWrite(blue, off);
+      analogWrite(green, on);  
+    }
+
+    else if (kleur == "Tea")
+    {
+      Serial.println("Tea");
+      analogWrite(red, off);
+      analogWrite(blue, 127);
+      analogWrite(green, 127);  
+    }
+
+    else if (kleur == "Wht")
+    {
+      Serial.println("Wht");
+      analogWrite(red, on);
+      analogWrite(blue, on);
+      analogWrite(green, on);  
+    }
+
+    else if (kleur == "Rbw")
+    {
+      Serial.println("Rbw"); 
+      analogWrite(red, on);
+      analogWrite(green, off);
+      analogWrite(blue, off);
+      for (int grnup = 0; grnup < 255; grnup++)
+        {
+          analogWrite(green, 255 - grnup);
+          delay(10);
+        }
+      for (int reddown = 0; reddown < 255; reddown++)
+        {
+          analogWrite(red, 0 + reddown);
+          delay(10);
+        }
+      for (int bluup = 0; bluup < 255; bluup++)
+        {
+          analogWrite(blue, 255 - bluup);
+          delay(10);
+        }
+      for (int grndown = 0; grndown < 255; grndown++)
+        {
+          analogWrite(green, 0 + grndown);
+          delay(10);
+        }
+      for (int redup = 0; redup < 255; redup++)
+        {
+          analogWrite(red, 255 - redup);
+          delay(10);
+        }
+      for (int bludown = 0; bludown < 255; bludown++)
+        {
+          analogWrite(blue, 0 + bludown);
+          delay(10);
+          if (kleur != "Rbw")
+          {
+            break;
+          }
+        }
+    }
+
+    else if (kleur == "Off")
+    {
+      Serial.println("Off");
+      analogWrite(red, off);
+      analogWrite(blue, off);
+      analogWrite(green, off);  
+    }
+
+    Serial.flush();
+  }
+}
